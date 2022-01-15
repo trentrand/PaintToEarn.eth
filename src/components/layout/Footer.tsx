@@ -1,20 +1,29 @@
-import { Flex, Link, Text } from "@chakra-ui/react";
+import { Flex, Link, Text, Button, Image } from "@chakra-ui/react";
+import { AiFillGithub } from "react-icons/ai";
 
 const Footer = () => {
   return (
     <Flex as="footer" width="full" align="center">
-      <Text>
-        {new Date().getFullYear()} -{" "}
-        <Link
-          textDecoration="none !important"
-          outline="none !important"
-          boxShadow="none !important"
-          href="https://github.com/a5f9t4"
-          isExternal
+      <Flex justifyContent="center" alignItems="center" gridGap={2}>
+        <Button
+          as="a"
+          href="https://github.com/trentrand/starknet-canvas"
+          target="_blank"
+          leftIcon={<AiFillGithub />}
+          size="sm"
         >
-          github.com/a5f9t4
-        </Link>
-      </Text>
+          Contribute on GitHub
+        </Button>
+        <Button
+          as="a"
+          href={"https://github.com/abigger87/cairopal"}
+          target="_blank"
+          size="sm"
+          variant="link"
+        >
+          Made with cairopal
+        </Button>
+      </Flex>
     </Flex>
   );
 };

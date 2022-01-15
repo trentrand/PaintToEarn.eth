@@ -1,6 +1,5 @@
 import { Box } from "@chakra-ui/react";
 
-import CTASection from "components/samples/CTASection";
 import SomeText from "components/samples/SomeText";
 import { MintTokens, Transactions } from "components/wallet";
 
@@ -10,9 +9,7 @@ const Home = () => {
       <SomeText />
       <Box flex="1 1 auto">
         <Transactions />
-        <MintTokens />
       </Box>
-      <CTASection />
     </Box>
   );
 };
