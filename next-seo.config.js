@@ -2,8 +2,8 @@
 const defaultSEOConfig = {
   title: "cairopal",
   titleTemplate: "%s",
-  defaultTitle: "cairopal",
-  description: "Flexible Starknet Dapp Template",
+  defaultTitle: "canvas",
+  description: "Paint-to-earn community canvas on the Ethereum blockchain",
   canonical: "https://nextarter-chakra.sznm.dev",
   openGraph: {
     url: "https://nextarter-chakra.sznm.dev",

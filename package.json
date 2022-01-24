@@ -1,10 +1,10 @@
 {
-	"name": "cairopal",
-	"version": "0.3.0",
-	"description": "Flexible Starknet Dapp Template",
+	"name": "starknet-canvas",
+	"version": "0.1.0",
+	"description": "Paint-to-earn community canvas on the Ethereum blockchain",
 	"main": "index.js",
 	"repository": "https://github.com/a5f9t4/cairopal.git",
-	"author": "Alucard <https://github.com/a5f9t4>",
+	"author": "Trent Rand <https://github.com/trentrand>",
 	"license": "AGPL-3.0-only",
 	"private": false,
 	"scripts": {

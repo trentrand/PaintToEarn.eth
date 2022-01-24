@@ -1,5 +1,7 @@
 #  Starknet Canvas
 
+> _Paint-to-earn_ community canvas on the ethereum blockchain
+
 ## Development
 
 Run starknet node

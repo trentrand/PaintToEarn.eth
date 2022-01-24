@@ -11,7 +11,7 @@ import * as React from "react";
 
 import createEmotionCache from "styles/createEmotionCache";
 
-const APP_NAME = "cairopal";
+const APP_NAME = "canvas";
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
