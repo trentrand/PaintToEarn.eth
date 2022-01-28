@@ -1,6 +1,6 @@
-#  Starknet Canvas
+#  PaintToEarn.eth
 
-> _Paint-to-earn_ community canvas on the ethereum blockchain
+> Earn $PAINT tokens by drawing on the ethereum blockchain
 
 ## Development
 
