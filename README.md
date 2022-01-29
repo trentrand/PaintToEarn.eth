@@ -7,7 +7,7 @@
 Run starknet node
 
 ```bash
-./env/bin/activate   # activate python virtual env
+source ./env/bin/activate   # activate python virtual env
 nile node
 ```
 
