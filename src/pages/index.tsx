@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from "@chakra-ui/react";
-
-import { Transactions } from "components/wallet";
 import { useStarknet } from "context";
 import { Canvas } from "components/canvas";
+import { Transactions } from "components/wallet";
 
 const Home = () => {
   const { connected, library } = useStarknet();

@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button, ButtonGroup, Text } from "@chakra-ui/react";
 import { useEffect } from "react";
 
 import { useStarknet } from "context";
@@ -35,21 +35,30 @@ const WalletConnect = () => {
       Connect Wallet
     </Button>
   ) : (
-    <Button
-      ml="4"
-      textDecoration="none !important"
-      outline="none !important"
-      boxShadow="none !important"
-      onClick={() => {
-        setConnected(false);
-      }}
-    >
-      {account
-        ? `${account.substring(0, 4)}...${account.substring(
-            account.length - 4
-          )}`
-        : "No Account"}
-    </Button>
+    <ButtonGroup ml="4" isAttached variant="outline">
+      <Button
+        textDecoration="none !important"
+        outline="none !important"
+        boxShadow="none !important"
+      >
+        <Text fontSize="md">3.2</Text>
+        <Text fontSize="xs" color="gray.500" ml={1}>PAINT</Text>
+      </Button>
+      <Button
+        textDecoration="none !important"
+        outline="none !important"
+        boxShadow="none !important"
+        onClick={() => {
+          setConnected(false);
+        }}
+      >
+        {account
+          ? `${account.substring(0, 4)}...${account.substring(
+              account.length - 4
+            )}`
+          : "No Account"}
+      </Button>
+    </ButtonGroup>
   );
 };
 
