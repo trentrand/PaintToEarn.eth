@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from "@chakra-ui/react";
 
-import SomeText from "components/samples/SomeText";
-import { MintTokens, Transactions } from "components/wallet";
+import { Transactions } from "components/wallet";
 import { useStarknet } from "context";
 import { Canvas } from "components/canvas";
 
@@ -24,11 +23,18 @@ const Home = () => {
 
   return (
     <Box mb={8} w="full" h="full" d="flex" flexDirection="column">
-      <SomeText />
-      <Box flex="1 1 auto">
-        <Canvas value={canvasData} />
-        <Transactions />
+      <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
+        <Canvas
+          value={[
+            3, 2, 1, 2, 3,
+            4, 3, 2, 3, 4,
+            2, 1, 0, 1, 2,
+            1, 0, 0, 0, 1,
+            3, 3, 3, 3, 3,
+          ]}
+        />
       </Box>
+      <Transactions />
     </Box>
   );
 };

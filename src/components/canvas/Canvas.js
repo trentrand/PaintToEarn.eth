@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import { Text } from "@chakra-ui/react";
 
-const GRID_SIZE = 10;
+const ROW_LENGTH = 5;
+const PIXEL_SIZE = 50;
 
 const colorMap = {
   0: '#000000', // black
@@ -18,16 +19,16 @@ const Canvas = ({ value, ...props }) => {
     value.map((pixel, index) => {
       ctx.fillStyle = colorMap[pixel];
       ctx.fillRect(
-        (index % 10) * 10,
-        Math.floor(index / 10) * GRID_SIZE,
-        GRID_SIZE,
-        GRID_SIZE
+        (index % ROW_LENGTH) * PIXEL_SIZE,
+        Math.floor(index / ROW_LENGTH) * PIXEL_SIZE,
+        PIXEL_SIZE,
+        PIXEL_SIZE
       );
     });
   }
 
   useEffect(() => {
-    if (typeof value !== 'array') {
+    if (value?.length === 0) {
       return;
     }
 
@@ -37,7 +38,7 @@ const Canvas = ({ value, ...props }) => {
     draw(context, value)
   }, [draw, value])
 
-  if (typeof value !== 'array') {
+  if (value?.length === 0) {
     return (
        <Text>Could not fetch canvas data</Text>
     );
@@ -46,8 +47,8 @@ const Canvas = ({ value, ...props }) => {
   return (
     <canvas
       ref={canvasRef}
-      width={10 * GRID_SIZE}
-      height={10 * GRID_SIZE}
+      width={ROW_LENGTH * PIXEL_SIZE}
+      height={ROW_LENGTH * PIXEL_SIZE}
       {...props}
     />
   );
