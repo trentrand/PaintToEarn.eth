@@ -13,6 +13,7 @@
 		"postbuild": "next-sitemap --config next-sitemap.config.js",
 		"log-storage-vars": "python3.7 getStorageVarAddress.py",
 		"start": "next start",
+    "test": "pytest tests/ -s -p no:warnings",
 		"lint": "next lint",
 		"lint:fix": "eslint src --fix && yarn format",
 		"type-check": "tsc --noEmit",
