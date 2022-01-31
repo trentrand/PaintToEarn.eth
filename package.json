@@ -1,9 +1,9 @@
 {
-	"name": "starknet-canvas",
+	"name": "PaintToEarn.eth",
 	"version": "0.1.0",
 	"description": "Paint-to-earn community canvas on the Ethereum blockchain",
 	"main": "index.js",
-	"repository": "https://github.com/a5f9t4/cairopal.git",
+	"repository": "https://github.com/trentrand/PaintToEarn.eth.git",
 	"author": "Trent Rand <https://github.com/trentrand>",
 	"license": "AGPL-3.0-only",
 	"private": false,
