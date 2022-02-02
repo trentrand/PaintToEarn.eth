@@ -33,12 +33,46 @@ func update_canvas{
   syscall_ptr: felt*,
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
-}(pixelIndex: felt, pixelData: felt):
-  # TODO: enforce maximum canvas size
-  canvas_pixels.write(pixelIndex, PixelEnum.data, pixelData)
+}(indexes_len: felt, indexes: felt*, values_len: felt, values: felt*, updates: felt):
+  alloc_locals
+
   # TODO: enforce timestamp restrictions (e.g. only can be updated after 30 seconds) https://starknet.io/docs/hello_starknet/more_features.html#block-number-and-timestamp
   let (caller_address) = get_caller_address()
-  canvas_pixels.write(pixelIndex, PixelEnum.last_updated_by, pixelData)
+
+  let (local arr_len) = canvas_pixels_len.read()
+
+  patch_array(
+    indexes=indexes,
+    values=values,
+    updates=updates,
+    updater_address=caller_address
+  )
+
+  return ()
+end
+
+func patch_array{
+  syscall_ptr: felt*,
+  pedersen_ptr: HashBuiltin*,
+  range_check_ptr
+}(indexes: felt*, values: felt*, updates: felt, updater_address: felt) -> ():
+  if updates == 0:
+    return ()
+  end
+
+  # TODO: enforce maximum canvas size
+  tempvar updateIndex = indexes[updates - 1]
+  canvas_pixels.write(updateIndex, PixelEnum.data, values[updates - 1])
+  canvas_pixels.write(updateIndex, PixelEnum.last_updated_by, updater_address)
+  # canvas_pixels.write(updateIndex, PixelEnum.timestamp, timestamp
+
+  patch_array(
+    indexes=indexes,
+    values=values,
+    updates=updates - 1,
+    updater_address=updater_address
+  )
+
   return ()
 end
 
