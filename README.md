@@ -2,9 +2,20 @@
 
 > Earn $PAINT tokens by drawing on the ethereum blockchain
 
+## Gameplay
+
+This play-to-earn game allows players to paint on a canvas deployed on the Ethereum network.
+
+Players must pay $PAINT tokens to paint pixels on the canvas.
+The game will reward player engagement, re-distributing players more $PAINT than they've spent.
+
+To prevent token farming, the canvas may lock changed pixels or player wallet addresses for a reasonable timespan.
+
 ## Development
 
-Run starknet node
+Scaling is achieved by using the [Starknet](https://starkware.co/starknet/) layer 2 network.
+
+Run the StarkNet transaction execution environment (similar to EVM):
 
 ```bash
 source ./env/bin/activate   # activate python virtual env
