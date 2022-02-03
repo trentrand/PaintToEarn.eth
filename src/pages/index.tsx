@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from "@chakra-ui/react";
+import { stark } from "starknet";
 import { useStarknet } from "context";
 import { Canvas } from "components/canvas";
 import { Transactions } from "components/wallet";
@@ -7,15 +8,21 @@ import { Transactions } from "components/wallet";
 const Home = () => {
   const { connected, library } = useStarknet();
 
-  const [canvasData, updateCanvasData] = useState();
+  const [canvasLength, updateCanvasLength] = useState(0);
+  const [canvasData, updateCanvasData] = useState([]);
+
   useEffect(() => {
     const getCanvasData = async () => {
-      const response = await library.getStorageAt(
-        '0x00fd9cd81612d1e8b32a40f217bcd7a947b36f143dd96700ae1226122b1c2cb7',
-         // TODO: create util for `from_(bytes(keccak('canvasData')) & MASK_250) % ADDR_BOUND`
-        '1684464463832855853928619972158079927141424324047522736714930898785516187524'
-      ); // e.g. 0x0
-      updateCanvasData(response);
+      const canvas = await library.callContract({
+        contract_address: '0x0305b4e97174ffe80f469b578bdca17f723b4ec2d11dfb516ee86d7a791ac6be',
+        entry_point_selector: stark.getSelectorFromName("get_array"),
+        calldata: [],
+      });
+      const canvasLength = parseInt(canvas.result[0], 16);
+      const canvasData = canvas.result.splice(1, canvasLength).map(number => parseInt(number, 16));
+
+      updateCanvasLength(canvasLength);
+      updateCanvasData(canvasData);
     }
     getCanvasData();
   }, []);
@@ -23,15 +30,7 @@ const Home = () => {
   return (
     <Box mb={8} w="full" h="full" d="flex" flexDirection="column">
       <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
-        <Canvas
-          value={[
-            3, 2, 1, 2, 3,
-            4, 3, 2, 3, 4,
-            2, 1, 0, 1, 2,
-            1, 0, 0, 0, 1,
-            3, 3, 3, 3, 3,
-          ]}
-        />
+        <Canvas length={canvasLength} value={canvasData} />
       </Box>
       <Transactions />
     </Box>
