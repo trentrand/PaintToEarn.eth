@@ -1,15 +1,9 @@
 import React, { useRef, useEffect } from "react";
 import { Text } from "@chakra-ui/react";
+import colorPalette from "../../constants/colorPalette"
 
 const PIXEL_SIZE = 50;
 
-const colorMap = {
-  0: '#000000', // black
-  1: '#FFFFFF', // white
-  2: '#FF0000', // red
-  3: '#00FF00', // green
-  4: '#0000FF', // blue
-};
 
 const Canvas = ({ length, value, ...props }) => {
   const canvasRef = useRef(null);

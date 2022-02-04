@@ -4,12 +4,15 @@ import { stark } from "starknet";
 import { useStarknet } from "context";
 import { Canvas } from "components/canvas";
 import { Transactions } from "components/wallet";
+import { Toolbar } from "components/layout";
 
 const Home = () => {
   const { connected, library } = useStarknet();
 
   const [canvasLength, updateCanvasLength] = useState(0);
   const [canvasData, updateCanvasData] = useState([]);
+
+  const [currentPaintColor, setCurrentPaintColor] = useState('#FFFFFF');
 
   useEffect(() => {
     const getCanvasData = async () => {
@@ -28,12 +31,18 @@ const Home = () => {
   }, []);
 
   return (
-    <Box mb={8} w="full" h="full" d="flex" flexDirection="column">
-      <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
-        <Canvas length={canvasLength} value={canvasData} />
+    <>
+      <Box mb={8} w="full" h="full" d="flex" flexDirection="column">
+        <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
+          <Canvas
+            length={canvasLength}
+            value={canvasData}
+            currentPaintColor={currentPaintColor}
+          />
+        </Box>
       </Box>
-      <Transactions />
-    </Box>
+      <Toolbar onChangeColor={setCurrentPaintColor} />
+    </>
   );
 };
 
