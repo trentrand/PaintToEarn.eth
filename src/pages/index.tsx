@@ -22,10 +22,10 @@ const Home = () => {
         calldata: [],
       });
       const canvasLength = parseInt(canvas.result[0], 16);
-      const canvasData = canvas.result.splice(1, canvasLength).map(number => parseInt(number, 16));
+      const nextCanvasData = canvas.result.splice(1, canvasLength).map(number => parseInt(number, 16));
 
       updateCanvasLength(canvasLength);
-      updateCanvasData(canvasData);
+      updateCanvasData(nextCanvasData);
     }
     getCanvasData();
   }, []);

@@ -7,9 +7,7 @@ import colorPalette from "../../constants/colorPalette";
 
 const colors = Object.values(colorPalette);
 
-const Toolbar = ({ onChangeColor, children }) => {
-  const [currentToolSelection, setCurrentToolSelection] = useState('pencil');
-
+const Toolbar = ({ onChangeColor, onChangeTool, currentTool, children }) => {
   return (
     <Flex
       border="gray.50"
@@ -34,18 +32,18 @@ const Toolbar = ({ onChangeColor, children }) => {
         textDecoration="none !important"
         outline="none !important"
         boxShadow="none !important"
-        isActive={currentToolSelection === 'pencil'}
-        icon={currentToolSelection === 'pencil' ? <RiBrushFill /> : <RiBrushLine />}
-        onClick={() => setCurrentToolSelection('pencil')}
+        isActive={currentTool === 'add'}
+        icon={currentTool === 'add' ? <RiBrushFill /> : <RiBrushLine />}
+        onClick={() => onChangeTool('add')}
       />
       <IconButton
         aria-label="theme toggle"
         textDecoration="none !important"
         outline="none !important"
         boxShadow="none !important"
-        isActive={currentToolSelection === 'eraser'}
-        icon={currentToolSelection === 'eraser' ? <RiEraserFill /> : <RiEraserLine />}
-        onClick={() => setCurrentToolSelection('eraser')}
+        isActive={currentTool === 'remove'}
+        icon={currentTool === 'remove' ? <RiEraserFill /> : <RiEraserLine />}
+        onClick={() => onChangeTool('remove')}
       />
     </Flex>
   );
