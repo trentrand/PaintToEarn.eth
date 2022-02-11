@@ -1,4 +1,5 @@
-import { Box, Flex, Heading } from "@chakra-ui/react";
+import { Box, Flex, Heading, IconButton } from "@chakra-ui/react";
+import { AiFillGithub } from "react-icons/ai";
 import Link from "next/link";
 
 import { ThemeToggle } from "components/layout";
@@ -12,6 +13,15 @@ const Header = () => {
       </Heading>
 
       <Box marginLeft="auto">
+        <IconButton
+          aria-label="theme toggle"
+          textDecoration="none !important"
+          outline="none !important"
+          boxShadow="none !important"
+          icon={<AiFillGithub />}
+          onClick={() => window.open('https://github.com/trentrand/PaintToEarn.eth')}
+          mr={2}
+        />
         <ThemeToggle />
         <WalletConnect />
       </Box>

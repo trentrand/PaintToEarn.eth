@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
-import { Footer, Header } from ".";
+import { Header } from ".";
 
 type LayoutProps = {
   children: ReactNode;
@@ -15,7 +15,6 @@ const Layout = ({ children }: LayoutProps) => {
         <Box flex="1 1 auto" as="main" marginY={22}>
           {children}
         </Box>
-        <Footer />
       </Box>
     </Box>
   );
