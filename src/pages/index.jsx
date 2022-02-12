@@ -5,15 +5,18 @@ import { useStarknet } from "context";
 import { Canvas } from "components/canvas";
 import { Transactions } from "components/wallet";
 import { Toolbar } from "components/layout";
+import colorMap from "../constants/colorPalette";
 
 const Home = () => {
   const { connected, library } = useStarknet();
 
   const [canvasLength, updateCanvasLength] = useState(0);
-  const [canvasData, updateCanvasData] = useState([]);
+  const [canvasData, setCanvasData] = useState(Array(25).fill(colorMap[0]));
 
   const [currentPaintColor, setCurrentPaintColor] = useState('#FFFFFF');
+  const [currentTool, setCurrentTool] = useState('add');
 
+  // TODO: update canvas state when new block has changed canvas data
   useEffect(() => {
     const getCanvasData = async () => {
       const canvas = await library.callContract({
@@ -21,14 +24,22 @@ const Home = () => {
         entry_point_selector: stark.getSelectorFromName("get_array"),
         calldata: [],
       });
-      const canvasLength = parseInt(canvas.result[0], 16);
-      const nextCanvasData = canvas.result.splice(1, canvasLength).map(number => parseInt(number, 16));
+      const nextCanvasLength = parseInt(canvas.result[0], 16);
+      const nextCanvasData = canvas.result.splice(1, nextCanvasLength).map(number => parseInt(number, 16));
 
-      updateCanvasLength(canvasLength);
-      updateCanvasData(nextCanvasData);
+      updateCanvasLength(nextCanvasLength);
+      setCanvasData(nextCanvasData);
     }
     getCanvasData();
   }, []);
+
+  const handleChange = (index, paintColor) => {
+    setCanvasData(prevCanvasState => {
+      const nextCanvasState = [...prevCanvasState];
+      nextCanvasState[index] = paintColor;
+      return nextCanvasState;
+    });
+  }
 
   return (
     <>
@@ -38,10 +49,16 @@ const Home = () => {
             length={canvasLength}
             value={canvasData}
             currentPaintColor={currentPaintColor}
+            currentTool={currentTool}
+            onChange={handleChange}
           />
         </Box>
       </Box>
-      <Toolbar onChangeColor={setCurrentPaintColor} />
+      <Toolbar
+        currentTool={currentTool}
+        onChangeTool={setCurrentTool}
+        onChangeColor={setCurrentPaintColor}
+      />
     </>
   );
 };

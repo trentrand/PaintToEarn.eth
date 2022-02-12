@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Box, Text } from "@chakra-ui/react";
-import colorMap from "../../constants/colorPalette"
 
 const PIXEL_SIZE = 50;
 
@@ -12,7 +11,7 @@ function getMousePos(canvas, e) {
   };
 }
 
-const Canvas = ({ length, value, currentPaintColor, currentTool, ...props }) => {
+const Canvas = ({ length, value, currentPaintColor, currentTool, onChange, ...props }) => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null)
 
@@ -32,8 +31,7 @@ const Canvas = ({ length, value, currentPaintColor, currentTool, ...props }) => 
     const context = canvas.getContext('2d')
     contextRef.current = context;
 
-    // TODO: draw existing canvas data
-    // drawCanvasState();
+    drawCanvasState();
 
     const gridCanvas = gridCanvasRef.current
     const gridContext = gridCanvas.getContext('2d')
@@ -41,29 +39,31 @@ const Canvas = ({ length, value, currentPaintColor, currentTool, ...props }) => 
     drawGrid(rowLength, rowLength, PIXEL_SIZE);
   }, [length])
 
-  // TODO: draw existing canvas when app loads and when new block has updated canvas
-  // function drawCanvasState() {
-    // state.map((pixel, index) => {
-    //   ctx.fillStyle = colorMap[pixel];
-    //   ctx.fillRect(
-    //     (index % rowLength) * PIXEL_SIZE,
-    //     Math.floor(index / rowLength) * PIXEL_SIZE,
-    //     PIXEL_SIZE,
-    //     PIXEL_SIZE
-    //   );
-    // });
-  // }
+  function drawCanvasState() {
+    value.map((pixel, index) => {
+      contextRef.current.fillStyle = pixel;
+      contextRef.current.fillRect(
+        (index % rowLength) * PIXEL_SIZE,
+        Math.floor(index / rowLength) * PIXEL_SIZE,
+        PIXEL_SIZE,
+        PIXEL_SIZE
+      );
+    });
+  }
 
-  function draw(e, rows, columns, cellSize) {
+  function draw(e, cellSize) {
     let mousePosition = getMousePos(canvasRef.current, e);
-    const positionX = Math.floor(mousePosition.x / cellSize) * cellSize;
-    const positionY = Math.floor(mousePosition.y / cellSize) * cellSize;
-    contextRef.current.fillStyle = currentPaintColor; // TODO: colorMap[<pixelColorData>]
+    const cellPositionX = Math.floor(mousePosition.x / cellSize);
+    const cellPositionY = Math.floor(mousePosition.y / cellSize);
+
+    contextRef.current.fillStyle = currentPaintColor;
     if (currentTool === 'add') {
-      contextRef.current.fillRect(positionX, positionY, cellSize, cellSize);
+      contextRef.current.fillRect(cellPositionX * cellSize, cellPositionY * cellSize, cellSize, cellSize);
     } else if (currentTool === 'remove'){
-      contextRef.current.clearRect(positionX, positionY, cellSize, cellSize);
+      contextRef.current.clearRect(cellPositionX * cellSize, cellPositionY * cellSize, cellSize, cellSize);
     }
+
+    onChange(cellPositionX + (cellPositionY * rowLength), currentPaintColor);
   }
 
   function drawGrid(rows, columns, cellSize) {
@@ -90,7 +90,7 @@ const Canvas = ({ length, value, currentPaintColor, currentTool, ...props }) => 
 
   const drawCanvas = (e) => {
     if (isMouseDown === true){
-      draw(e, rowLength, rowLength, PIXEL_SIZE);
+      draw(e, PIXEL_SIZE);
     }
   }
 
