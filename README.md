@@ -2,6 +2,8 @@
 
 > Earn $PAINT tokens by drawing on the ethereum blockchain
 
+![Example of web application](./app-demo.png)
+
 ## Gameplay
 
 This play-to-earn game allows players to paint on a canvas deployed on the Ethereum network.
