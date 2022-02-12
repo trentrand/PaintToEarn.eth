@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <Flex as="header" width="full" align="center">
       <Heading as="h1" size="md">
-        <Link href="/">PaintToEarn.eth</Link>
+        <Link href="https://github.com/trentrand/PaintToEarn.eth">PaintToEarn.eth</Link>
       </Heading>
 
       <Box marginLeft="auto">
