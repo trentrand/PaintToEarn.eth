@@ -8,4 +8,9 @@ const colorMap = {
   4: '#0000FF', // blue
 };
 
-export default colorMap;
+const reverseColorMap = Object.entries(colorMap).reduce((reverseColorMap, [key, value]) => {
+  reverseColorMap[value] = parseInt(key);
+    return reverseColorMap;
+}, {});
+
+export { colorMap, reverseColorMap }

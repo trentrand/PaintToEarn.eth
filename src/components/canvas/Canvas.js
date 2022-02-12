@@ -11,7 +11,7 @@ function getMousePos(canvas, e) {
   };
 }
 
-const Canvas = ({ length, value, currentPaintColor, currentTool, onChange, ...props }) => {
+const Canvas = ({ length, value, onChange, currentPaintColor, currentTool, ...props }) => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null)
 
@@ -31,8 +31,6 @@ const Canvas = ({ length, value, currentPaintColor, currentTool, onChange, ...pr
     const context = canvas.getContext('2d')
     contextRef.current = context;
 
-    drawCanvasState();
-
     const gridCanvas = gridCanvasRef.current
     const gridContext = gridCanvas.getContext('2d')
     gridContextRef.current = gridContext;
@@ -50,6 +48,10 @@ const Canvas = ({ length, value, currentPaintColor, currentTool, onChange, ...pr
       );
     });
   }
+
+  useEffect(() => {
+    drawCanvasState();
+  }, [value]);
 
   function draw(e, cellSize) {
     let mousePosition = getMousePos(canvasRef.current, e);

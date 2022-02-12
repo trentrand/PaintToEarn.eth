@@ -5,13 +5,14 @@ import { useStarknet } from "context";
 import { Canvas } from "components/canvas";
 import { Transactions } from "components/wallet";
 import { Toolbar } from "components/layout";
-import colorMap from "../constants/colorPalette";
+import { colorMap, reverseColorMap } from "../constants/colorPalette";
 
 const Home = () => {
   const { connected, library } = useStarknet();
 
   const [canvasLength, updateCanvasLength] = useState(0);
-  const [canvasData, setCanvasData] = useState(Array(25).fill(colorMap[0]));
+  const [canvasData, setCanvasData] = useState([]);
+  const [userCanvasData, setUserCanvasData] = useState([]);
 
   const [currentPaintColor, setCurrentPaintColor] = useState('#FFFFFF');
   const [currentTool, setCurrentTool] = useState('add');
@@ -29,17 +30,22 @@ const Home = () => {
 
       updateCanvasLength(nextCanvasLength);
       setCanvasData(nextCanvasData);
+      setUserCanvasData(Array(nextCanvasLength).fill(null));
     }
     getCanvasData();
   }, []);
 
   const handleChange = (index, paintColor) => {
-    setCanvasData(prevCanvasState => {
+    setUserCanvasData(prevCanvasState => {
       const nextCanvasState = [...prevCanvasState];
-      nextCanvasState[index] = paintColor;
+      nextCanvasState[index] = reverseColorMap[paintColor];
       return nextCanvasState;
     });
   }
+
+  const compiledCanvasData = userCanvasData.map((userPixelValue, i) => (
+    userPixelValue !== null ? colorMap[userPixelValue] : colorMap[canvasData[i]]
+  ));
 
   return (
     <>
@@ -47,7 +53,7 @@ const Home = () => {
         <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
           <Canvas
             length={canvasLength}
-            value={canvasData}
+            value={compiledCanvasData}
             currentPaintColor={currentPaintColor}
             currentTool={currentTool}
             onChange={handleChange}

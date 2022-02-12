@@ -3,9 +3,9 @@ import { Flex, Box } from "@chakra-ui/react";
 import { IconButton } from "@chakra-ui/react";
 import { RiBrushFill, RiBrushLine, RiEraserFill, RiEraserLine } from "react-icons/ri";
 import { ColorPicker } from "chakra-color-picker";
-import colorPalette from "../../constants/colorPalette";
+import { colorMap } from "../../constants/colorPalette";
 
-const colors = Object.values(colorPalette);
+const colors = Object.values(colorMap);
 
 const Toolbar = ({ onChangeColor, onChangeTool, currentTool, children }) => {
   return (
