@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Box, Text } from "@chakra-ui/react";
+import React, { useRef, useState, useEffect } from 'react';
+import { Box, Text } from '@chakra-ui/react';
 
 const PIXEL_SIZE = 50;
 
@@ -73,7 +73,7 @@ const Canvas = ({ length, value, onChange, currentPaintColor, currentTool, ...pr
     gridContextRef.current.clearRect(0, 0, canvasEl.width, canvasEl.height);
     for (let x = 0; x < rows; x++) {
       for (let y = 0; y < columns; y++) {
-        gridContextRef.current.strokeStyle = "gray";
+        gridContextRef.current.strokeStyle = 'gray';
         gridContextRef.current.lineWidth = 0.1;
         gridContextRef.current.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }

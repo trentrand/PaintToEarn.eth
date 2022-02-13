@@ -19,25 +19,14 @@ const Toolbar = ({ onChangeColor, onChangeTool, currentTool, children }) => {
       borderRadius="50px"
       position="absolute"
       left="10px"
-      top="50%"
+      top="calc(50% - 31px)"
       paddingY={1}
       paddingX="5px"
       alignItems="center"
       justifyContent="center"
       flexDirection="column"
-      transform="translate(0, -50%)"
       gap="6px"
     >
-      <ColorPicker bg={popoverBackgroundColor} borderWidth="1px" onChange={onChangeColor} colors={colors} placement="right-end" />
-      <IconButton
-        aria-label="theme toggle"
-        textDecoration="none !important"
-        outline="none !important"
-        boxShadow="none !important"
-        isActive={currentTool === 'add'}
-        icon={currentTool === 'add' ? <RiBrushFill /> : <RiBrushLine />}
-        onClick={() => onChangeTool('add')}
-      />
       <IconButton
         aria-label="theme toggle"
         textDecoration="none !important"
@@ -47,6 +36,18 @@ const Toolbar = ({ onChangeColor, onChangeTool, currentTool, children }) => {
         icon={currentTool === 'remove' ? <RiEraserFill /> : <RiEraserLine />}
         onClick={() => onChangeTool('remove')}
       />
+      <IconButton
+        aria-label="theme toggle"
+        textDecoration="none !important"
+        outline="none !important"
+        boxShadow="none !important"
+        isActive={currentTool === 'add'}
+        icon={currentTool === 'add' ? <RiBrushFill /> : <RiBrushLine />}
+        onClick={() => onChangeTool('add')}
+      />
+      {currentTool === 'add' ? (
+        <ColorPicker bg={popoverBackgroundColor} borderWidth="1px" onChange={onChangeColor} colors={colors} placement="right-end" />
+      ) : null}
     </Flex>
   );
 }
