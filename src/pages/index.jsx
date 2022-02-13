@@ -35,10 +35,14 @@ const Home = () => {
     getCanvasData();
   }, []);
 
-  const handleChange = (index, paintColor) => {
+  const handleChange = (index, paintColor, tool) => {
     setUserCanvasData(prevCanvasState => {
       const nextCanvasState = [...prevCanvasState];
-      nextCanvasState[index] = reverseColorMap[paintColor];
+      if (tool === 'add') {
+        nextCanvasState[index] = reverseColorMap[paintColor];
+      } else if (tool === 'remove') {
+        nextCanvasState[index] = null;
+      }
       return nextCanvasState;
     });
   }

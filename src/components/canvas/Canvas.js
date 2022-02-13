@@ -65,7 +65,7 @@ const Canvas = ({ length, value, onChange, currentPaintColor, currentTool, ...pr
       contextRef.current.clearRect(cellPositionX * cellSize, cellPositionY * cellSize, cellSize, cellSize);
     }
 
-    onChange(cellPositionX + (cellPositionY * rowLength), currentPaintColor);
+    onChange(cellPositionX + (cellPositionY * rowLength), currentPaintColor, currentTool);
   }
 
   function drawGrid(rows, columns, cellSize) {
