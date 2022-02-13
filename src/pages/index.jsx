@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Box } from "@chakra-ui/react";
-import { stark } from "starknet";
-import { useStarknet } from "context";
-import { Canvas } from "components/canvas";
-import { Transactions } from "components/wallet";
-import { Toolbar } from "components/layout";
-import { colorMap, reverseColorMap } from "../constants/colorPalette";
+import React, { useEffect, useRef, useState } from 'react';
+import { Box } from '@chakra-ui/react';
+import { stark } from 'starknet';
+import { useStarknet } from 'context';
+import { Canvas } from 'components/canvas';
+import { Toolbar } from 'components/layout';
+import { colorMap, reverseColorMap } from '../constants/colorPalette';
+
+const paintCost = 1;
+const totalPaintBalance = 3.2;
 
 const Home = () => {
   const { connected, library } = useStarknet();
 
   const [canvasLength, updateCanvasLength] = useState(0);
   const [canvasData, setCanvasData] = useState([]);
+
+  const userModificationsCounter = useRef(0);
   const [userCanvasData, setUserCanvasData] = useState([]);
 
   const [currentPaintColor, setCurrentPaintColor] = useState('#FFFFFF');
@@ -43,6 +47,7 @@ const Home = () => {
       } else if (tool === 'remove') {
         nextCanvasState[index] = null;
       }
+      userModificationsCounter.current = userCanvasData.filter(modification => modification !== null).length;
       return nextCanvasState;
     });
   }
@@ -68,6 +73,7 @@ const Home = () => {
         currentTool={currentTool}
         onChangeTool={setCurrentTool}
         onChangeColor={setCurrentPaintColor}
+        modificationsCounter={userModificationsCounter.current}
       />
     </>
   );
