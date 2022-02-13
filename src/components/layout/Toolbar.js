@@ -1,17 +1,19 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Flex, Box } from "@chakra-ui/react";
-import { IconButton } from "@chakra-ui/react";
-import { RiBrushFill, RiBrushLine, RiEraserFill, RiEraserLine } from "react-icons/ri";
-import { ColorPicker } from "chakra-color-picker";
-import { colorMap } from "../../constants/colorPalette";
+import React  from 'react';
+import { Flex, Box, IconButton, useColorModeValue } from '@chakra-ui/react';
+import { RiBrushFill, RiBrushLine, RiEraserFill, RiEraserLine } from 'react-icons/ri';
+import { ColorPicker } from 'chakra-color-picker';
+import { colorMap } from '../../constants/colorPalette';
 
 const colors = Object.values(colorMap);
 
 const Toolbar = ({ onChangeColor, onChangeTool, currentTool, children }) => {
+  const backgroundColor = useColorModeValue('gray.100', 'whiteAlpha.200')
+  const popoverBackgroundColor = useColorModeValue('gray.200', 'whiteAlpha.300')
+
   return (
     <Flex
       border="gray.50"
-      background="gray.100"
+      background={backgroundColor}
       borderWidth="1px"
       borderStyle="solid"
       borderRadius="50px"
@@ -26,7 +28,7 @@ const Toolbar = ({ onChangeColor, onChangeTool, currentTool, children }) => {
       transform="translate(0, -50%)"
       gap="6px"
     >
-      <ColorPicker bg="gray.200" borderWidth="1px" onChange={onChangeColor} colors={colors} placement="right-end" />
+      <ColorPicker bg={popoverBackgroundColor} borderWidth="1px" onChange={onChangeColor} colors={colors} placement="right-end" />
       <IconButton
         aria-label="theme toggle"
         textDecoration="none !important"
