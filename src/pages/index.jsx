@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box } from '@chakra-ui/react';
 import { stark } from 'starknet';
 import { useStarknet } from 'context';
@@ -15,11 +15,13 @@ const Home = () => {
   const [canvasLength, updateCanvasLength] = useState(0);
   const [canvasData, setCanvasData] = useState([]);
 
-  const userModificationsCounter = useRef(0);
+  const [userModificationsCounter, setUserModificationsCounter] = useState(0);
   const [userCanvasData, setUserCanvasData] = useState([]);
 
   const [currentPaintColor, setCurrentPaintColor] = useState('#FFFFFF');
   const [currentTool, setCurrentTool] = useState('add');
+
+  const [allowAddTool, setAllowAddTool] = useState(paintCost < totalPaintBalance);
 
   // TODO: update canvas state when new block has changed canvas data
   useEffect(() => {
@@ -47,7 +49,9 @@ const Home = () => {
       } else if (tool === 'remove') {
         nextCanvasState[index] = null;
       }
-      userModificationsCounter.current = userCanvasData.filter(modification => modification !== null).length;
+      setUserModificationsCounter(userCanvasData.filter(modification => modification !== null).length);
+      setAllowAddTool(((userModificationsCounter * paintCost) + paintCost) < totalPaintBalance);
+
       return nextCanvasState;
     });
   }
@@ -66,14 +70,15 @@ const Home = () => {
             currentPaintColor={currentPaintColor}
             currentTool={currentTool}
             onChange={handleChange}
+            allowAddTool={allowAddTool}
           />
         </Box>
       </Box>
       <Toolbar
         currentTool={currentTool}
+        modificationsCounter={userModificationsCounter}
         onChangeTool={setCurrentTool}
         onChangeColor={setCurrentPaintColor}
-        modificationsCounter={userModificationsCounter.current}
       />
     </>
   );

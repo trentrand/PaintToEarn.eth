@@ -11,7 +11,15 @@ function getMousePos(canvas, e) {
   };
 }
 
-const Canvas = ({ length, value, onChange, currentPaintColor, currentTool, ...props }) => {
+const Canvas = ({
+  length,
+  value,
+  onChange,
+  currentPaintColor,
+  currentTool,
+  allowAddTool,
+  ...props
+}) => {
   const canvasRef = useRef(null);
   const contextRef = useRef(null)
 
@@ -37,6 +45,14 @@ const Canvas = ({ length, value, onChange, currentPaintColor, currentTool, ...pr
     drawGrid(rowLength, rowLength, PIXEL_SIZE);
   }, [length])
 
+  useEffect(() => {
+    if (gridContextRef.current && !allowAddTool && currentTool === 'add') {
+      gridCanvasRef.current.style.cursor = 'not-allowed';
+    } else if (gridContextRef.current) {
+      gridCanvasRef.current.style.cursor = 'pointer';
+    }
+  }, [allowAddTool, currentTool]);
+
   function drawCanvasState() {
     value.map((pixel, index) => {
       contextRef.current.fillStyle = pixel;
@@ -54,6 +70,10 @@ const Canvas = ({ length, value, onChange, currentPaintColor, currentTool, ...pr
   }, [value]);
 
   function draw(e, cellSize) {
+    if (currentTool === 'add' && !allowAddTool) {
+      return;
+    }
+
     let mousePosition = getMousePos(canvasRef.current, e);
     const cellPositionX = Math.floor(mousePosition.x / cellSize);
     const cellPositionY = Math.floor(mousePosition.y / cellSize);
