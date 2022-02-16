@@ -1,12 +1,13 @@
 import React  from 'react';
 import { Flex, Box, Text, IconButton, useColorModeValue } from '@chakra-ui/react';
 import { RiBrushFill, RiBrushLine, RiEraserFill, RiEraserLine } from 'react-icons/ri';
+import { HiOutlineSaveAs } from 'react-icons/hi';
 import { ColorPicker } from 'chakra-color-picker';
 import { colorMap } from '../../constants/colorPalette';
 
 const colors = Object.values(colorMap);
 
-const Toolbar = ({ onChangeColor, onChangeTool, currentTool, modificationsCounter, children }) => {
+const Toolbar = ({ onSave, onChangeColor, onChangeTool, currentTool, modificationsCounter, children }) => {
   const backgroundColor = useColorModeValue('gray.100', 'whiteAlpha.200')
   const popoverBackgroundColor = useColorModeValue('gray.200', 'whiteAlpha.300')
 
@@ -23,15 +24,15 @@ const Toolbar = ({ onChangeColor, onChangeTool, currentTool, modificationsCounte
           borderWidth="1px"
           borderStyle="solid"
           borderRadius="50px"
-                    paddingY={1}
           paddingX="5px"
+          paddingY={1}
           alignItems="center"
           justifyContent="center"
           flexDirection="column"
           gap="6px"
         >
           <IconButton
-            aria-label="theme toggle"
+            aria-label="eraser mode"
             textDecoration="none !important"
             outline="none !important"
             boxShadow="none !important"
@@ -40,7 +41,7 @@ const Toolbar = ({ onChangeColor, onChangeTool, currentTool, modificationsCounte
             onClick={() => onChangeTool('remove')}
           />
           <IconButton
-            aria-label="theme toggle"
+            aria-label="paint mode"
             textDecoration="none !important"
             outline="none !important"
             boxShadow="none !important"
@@ -54,6 +55,15 @@ const Toolbar = ({ onChangeColor, onChangeTool, currentTool, modificationsCounte
               <Text as="a" pointerEvents="none" position="absolute" top="50%" left="50%" transform="translate(-50%, -50%)">{modificationsCounter}</Text>
             </Box>
           ) : null}
+          <IconButton
+            aria-label="save modifications"
+            textDecoration="none !important"
+            outline="none !important"
+            boxShadow="none !important"
+            isDisabled={modificationsCounter === 0}
+            icon={<HiOutlineSaveAs />}
+            onClick={() => onSave()}
+          />
         </Flex>
       </Box>
     </>

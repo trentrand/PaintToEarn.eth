@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Box } from '@chakra-ui/react';
-import { stark } from 'starknet';
+import { compileCalldata, stark, Contract } from 'starknet';
 import { useStarknet } from 'context';
 import { Canvas } from 'components/canvas';
 import { Toolbar } from 'components/layout';
 import { colorMap, reverseColorMap } from '../constants/colorPalette';
+import contractAbi from '../../artifacts/abis/contract.json';
 
+// TODO: deploy latest contract revision
+const CONTRACT_ADDRESS = '0x039d629ffa38a38c633ad2ba222dca43cfb6424755e91fca3c1f5bd2c5f998c6';
+
+// TODO: implement real data source for constants
 const paintCost = 1;
 const totalPaintBalance = 3.2;
 
 const Home = () => {
-  const { connected, library } = useStarknet();
+  const { connected, connectBrowserWallet, library } = useStarknet();
 
   const [canvasLength, updateCanvasLength] = useState(0);
   const [canvasData, setCanvasData] = useState([]);
@@ -23,11 +28,17 @@ const Home = () => {
 
   const [allowAddTool, setAllowAddTool] = useState(paintCost < totalPaintBalance);
 
+  const canvasContract = useRef();
+
+  useEffect(() => {
+    canvasContract.current = new Contract(contractAbi, CONTRACT_ADDRESS);
+  });
+
   // TODO: update canvas state when new block has changed canvas data
   useEffect(() => {
     const getCanvasData = async () => {
       const canvas = await library.callContract({
-        contract_address: '0x0305b4e97174ffe80f469b578bdca17f723b4ec2d11dfb516ee86d7a791ac6be',
+        contract_address: CONTRACT_ADDRESS,
         entry_point_selector: stark.getSelectorFromName("get_array"),
         calldata: [],
       });
@@ -56,13 +67,42 @@ const Home = () => {
     });
   }
 
+  const handleSave = async () => {
+    if (!connected) {
+      // TODO: is this ok? should user initiate the action?
+      connectBrowserWallet();
+    }
+
+    const modifications = userCanvasData.reduce((modifications, pixelData, pixelIndex) => {
+      if (pixelData === null) {
+        return modifications;
+      }
+      modifications[pixelIndex] = pixelData;
+      return modifications;
+    }, {});
+
+    const changedIndexes = Object.keys(modifications).map(x => parseInt(x));
+    const changedValues = Object.values(modifications);
+
+    console.log('Saving modifications to canvas', changedIndexes, changedValues, userModificationsCounter);
+
+    // TODO: using Contract class to invoke method doesn't require a signature in wallet -- why?
+    const paintCanvasResult = canvasContract.current.invoke('update_canvas', {
+      indexes: changedIndexes.map(x => String(x)),
+      values: changedValues.map(x => String(x)),
+      updates: String(userModificationsCounter),
+    });
+
+    console.log(paintCanvasResult);
+  }
+
   const compiledCanvasData = userCanvasData.map((userPixelValue, i) => (
     userPixelValue !== null ? colorMap[userPixelValue] : colorMap[canvasData[i]]
   ));
 
   return (
     <>
-      <Box mb={8} w="full" h="full" d="flex" flexDirection="column">
+      <Box mb={8} width="full" height="full" display="flex" flexDirection="column">
         <Box flex="1 1 auto" display="flex" alignItems="center" justifyContent="center">
           <Canvas
             length={canvasLength}
@@ -79,6 +119,7 @@ const Home = () => {
         modificationsCounter={userModificationsCounter}
         onChangeTool={setCurrentTool}
         onChangeColor={setCurrentPaintColor}
+        onSave={handleSave}
       />
     </>
   );
