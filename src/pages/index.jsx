@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box } from '@chakra-ui/react';
-import { compileCalldata, stark, Contract } from 'starknet';
+import { stark, Contract } from 'starknet';
 import { useStarknet } from 'context';
 import { Canvas } from 'components/canvas';
 import { Toolbar } from 'components/layout';
@@ -34,23 +34,31 @@ const Home = () => {
     canvasContract.current = new Contract(contractAbi, CONTRACT_ADDRESS);
   });
 
-  // TODO: update canvas state when new block has changed canvas data
-  useEffect(() => {
-    const getCanvasData = async () => {
-      const canvas = await library.callContract({
-        contract_address: CONTRACT_ADDRESS,
-        entry_point_selector: stark.getSelectorFromName("get_array"),
-        calldata: [],
-      });
-      const nextCanvasLength = parseInt(canvas.result[0], 16);
-      const nextCanvasData = canvas.result.splice(1, nextCanvasLength).map(number => parseInt(number, 16));
+  const fetchCanvas = React.useCallback(async () => {
+    const canvas = await library.callContract({
+      contract_address: CONTRACT_ADDRESS,
+      entry_point_selector: stark.getSelectorFromName('get_array'),
+      calldata: [],
+    });
+    const nextCanvasLength = parseInt(canvas.result[0], 16);
+    const nextCanvasData = canvas.result.splice(1, nextCanvasLength).map(number => parseInt(number, 16));
 
-      updateCanvasLength(nextCanvasLength);
-      setCanvasData(nextCanvasData);
+    updateCanvasLength(nextCanvasLength);
+    setCanvasData(nextCanvasData);
+
+    if (userCanvasData.length === 0) {
       setUserCanvasData(Array(nextCanvasLength).fill(null));
     }
-    getCanvasData();
-  }, []);
+  }, [library]);
+
+  // eager polling of canvas data with leading call on page mount
+  React.useEffect(() => {
+    fetchCanvas();
+    const intervalId = setInterval(() => {
+      fetchCanvas();
+    }, 30 * 1000);
+    return () => clearInterval(intervalId);
+  }, [fetchCanvas]);
 
   const handleChange = (index, paintColor, tool) => {
     setUserCanvasData(prevCanvasState => {
