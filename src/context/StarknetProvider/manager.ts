@@ -48,6 +48,10 @@ function reducer(
   }
 }
 
+const navigateToArgentX = () => {
+  window.open('https://www.argent.xyz/argent-x/');
+}
+
 const useStarknetManager = (): StarknetState => {
   const starknet = getStarknet({ showModal: false });
   const [state, dispatch] = React.useReducer(reducer, {
@@ -60,11 +64,12 @@ const useStarknetManager = (): StarknetState => {
     try {
       await starknet.enable();
     } catch (e) {
-      toast.error("⚠️ Argent-X wallet extension missing!", {
+      toast.error("⚠️ Argent-X Starknet wallet extension missing!", {
         position: "top-left",
         autoClose: 4000,
         hideProgressBar: true,
         closeOnClick: true,
+        onClick: navigateToArgentX,
         pauseOnHover: true,
         draggable: true,
       });
@@ -80,11 +85,12 @@ const useStarknetManager = (): StarknetState => {
         dispatch({ type: "set_provider", provider: starknet.signer });
       }
     } catch (e) {
-      toast.error("⚠️ Argent-X wallet extension missing!", {
+      toast.error("⚠️ Argent-X Starknet wallet extension missing!", {
         position: "top-left",
         autoClose: 2000,
         hideProgressBar: true,
         closeOnClick: true,
+        onClick: navigateToArgentX,
         pauseOnHover: true,
         draggable: true,
       });
