@@ -51,7 +51,7 @@ const Toolbar = ({ onSave, onChangeColor, onChangeTool, currentTool, modificatio
           />
           {currentTool === 'add' ? (
             <Box position="relative" height="50px" width="50px">
-              <ColorPicker bg={popoverBackgroundColor} borderWidth="1px" onChange={onChangeColor} colors={colors} placement="right-end" />
+              <ColorPicker bg={popoverBackgroundColor} borderWidth="1px" onChange={onChangeColor} colors={colors} placement="right-end" defaultColor="#ff0000" />
               <Text as="a" pointerEvents="none" position="absolute" top="50%" left="50%" transform="translate(-50%, -50%)">{modificationsCounter}</Text>
             </Box>
           ) : null}
