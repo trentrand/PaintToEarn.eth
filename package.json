@@ -1,6 +1,6 @@
 {
 	"name": "PaintToEarn.eth",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Paint-to-earn community canvas on the Ethereum blockchain",
 	"main": "index.js",
 	"repository": "https://github.com/trentrand/PaintToEarn.eth.git",

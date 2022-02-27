@@ -6,9 +6,20 @@ from starkware.starknet.testing.starknet import Starknet
 from starkware.starknet.testing.contract import StarknetContract
 from starkware.starknet.testing.objects import StarknetTransactionExecutionInfo
 from starkware.starknet.testing.state import StarknetState
+from starknet_py.cairo.felt import encode_shortstring
+
+# Utils
+def uint(a):
+    return(a, 0)
+
+
+def str_to_felt(text):
+    b_text = bytes(text, 'ascii')
+    return int.from_bytes(b_text, "big")
 
 # Contract source
 CONTRACT_FILE = os.path.join(os.path.dirname(__file__), "../contracts/contract.cairo")
+TOKEN_CONTRACT_FILE = os.path.join(os.path.dirname(__file__), "../openzeppelin/token/erc20/ERC20_Mintable.cairo")
 
 @pytest.fixture
 async def canvasContract() -> StarknetContract:
@@ -36,7 +47,25 @@ async def test_update_canvas(canvasContract: StarknetContract):
  # Create a new Starknet class that simulates the StarkNet system
  starknet = await Starknet.empty()
 
- # Deploy the canvas contract.
+ tokenContract = await starknet.deploy(
+   source=TOKEN_CONTRACT_FILE,
+   constructor_calldata=[
+     str_to_felt("Paint"),
+     str_to_felt("PAINT"),
+     *uint(100),
+     canvasContract.contract_address, # recipient
+     canvasContract.contract_address, # owner
+   ]
+)
+
+ # Set reference to $PAINT token contract
+ await canvasContract.update_token_contract_address(
+   contract_address=tokenContract.contract_address,
+ ).invoke()
+
+ token_contract_address_execution_info = await canvasContract.get_token_contract_address().call()
+
+ assert token_contract_address_execution_info.result.contract_address == tokenContract.contract_address
 
  # Set initial canvas pixels
  await canvasContract.update_canvas(

@@ -15,7 +15,11 @@ func canvas_pixels_len() -> (res: felt):
 end
 
 @storage_var
-func canvas_pixels(index: felt, param_index: felt) -> (res : felt):
+func canvas_pixels(index: felt, param_index: felt) -> (res: felt):
+end
+
+@storage_var
+func token_contract_address() -> (contract_address: felt):
 end
 
 @constructor
@@ -103,5 +107,26 @@ func prepare_array{
   let (base) = canvas_pixels.read(index, PixelEnum.data)
   assert [arr] = base
   prepare_array(arr_len=arr_len - 1, arr=&arr[1], index=index + 1)
+  return ()
+end
+
+@view
+func get_token_contract_address{
+  syscall_ptr: felt*,
+  pedersen_ptr: HashBuiltin*,
+  range_check_ptr
+}() -> (contract_address: felt):
+  let (res) = token_contract_address.read()
+  return (contract_address=res)
+end
+
+# TODO: write test, fix issues
+@external
+func update_token_contract_address{
+  syscall_ptr: felt*,
+  pedersen_ptr: HashBuiltin*,
+  range_check_ptr
+}(contract_address: felt):
+  token_contract_address.write(contract_address)
   return ()
 end
