@@ -37,7 +37,7 @@ const Home = () => {
   const fetchCanvas = React.useCallback(async () => {
     const canvas = await library.callContract({
       contract_address: CONTRACT_ADDRESS,
-      entry_point_selector: stark.getSelectorFromName('get_array'),
+      entry_point_selector: stark.getSelectorFromName('get_canvas_data'),
       calldata: [],
     });
     const nextCanvasLength = parseInt(canvas.result[0], 16);
@@ -95,7 +95,7 @@ const Home = () => {
     console.log('Saving modifications to canvas', changedIndexes, changedValues, userModificationsCounter);
 
     // TODO: using Contract class to invoke method doesn't require a signature in wallet -- why?
-    const paintCanvasResult = canvasContract.current.invoke('update_canvas', {
+    const paintCanvasResult = canvasContract.current.invoke('update_canvas_data', {
       indexes: changedIndexes.map(x => String(x)),
       values: changedValues.map(x => String(x)),
       updates: String(userModificationsCounter),

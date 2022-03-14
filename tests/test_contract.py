@@ -1,103 +1,122 @@
 import os
 
 import pytest
-from starkware.starknet.compiler.compile import compile_starknet_files
+import asyncio
 from starkware.starknet.testing.starknet import Starknet
 from starkware.starknet.testing.contract import StarknetContract
-from starkware.starknet.testing.objects import StarknetTransactionExecutionInfo
-from starkware.starknet.testing.state import StarknetState
-from starknet_py.cairo.felt import encode_shortstring
+from utils.Signer import Signer
+from utils.Utilities import (uint, from_uint, str_to_felt)
 
-# Utils
-def uint(a):
-    return(a, 0)
+mockSigner = Signer(123456789987654321)
 
+@pytest.fixture(scope='module')
+def event_loop():
+    return asyncio.new_event_loop()
 
-def str_to_felt(text):
-    b_text = bytes(text, 'ascii')
-    return int.from_bytes(b_text, "big")
+@pytest.fixture(scope='module')
+async def get_starknet():
+  starknet = await Starknet.empty()
+  return starknet
 
-# Contract source
+# Contract fixture factories
+ACCOUNT_CONTRACT_FILE= os.path.join(os.path.dirname(__file__), "../openzeppelin/account/Account.cairo")
+
+@pytest.fixture
+async def account_factory(get_starknet):
+  starknet = get_starknet
+  account = await starknet.deploy(
+    source=ACCOUNT_CONTRACT_FILE,
+    constructor_calldata=[mockSigner.public_key]
+  )
+
+  return account
+
 CONTRACT_FILE = os.path.join(os.path.dirname(__file__), "../contracts/contract.cairo")
+
+@pytest.fixture
+async def canvas_factory(get_starknet) -> StarknetContract:
+  starknet = get_starknet
+
+  return await starknet.deploy(
+    source=CONTRACT_FILE,
+    constructor_calldata=[]
+  )
+
 TOKEN_CONTRACT_FILE = os.path.join(os.path.dirname(__file__), "../openzeppelin/token/erc20/ERC20_Mintable.cairo")
 
 @pytest.fixture
-async def canvasContract() -> StarknetContract:
-    contract_definition = compile_starknet_files([CONTRACT_FILE], debug_info=True)
-    state = await StarknetState.empty()
-    contract_address, execution_info = await state.deploy(
-        constructor_calldata=[],
-        contract_definition=contract_definition,
-    )
-    deploy_execution_info = StarknetTransactionExecutionInfo.from_internal(
-        tx_execution_info=execution_info, result=(), main_call_events=[]
-    )
-    assert contract_definition.abi is not None
+async def token_factory(get_starknet, canvas_factory):
+  starknet = get_starknet
+  canvas = canvas_factory
 
-    return StarknetContract(
-        state=state,
-        abi=contract_definition.abi,
-        contract_address=contract_address,
-        deploy_execution_info=deploy_execution_info,
-    )
+  return await starknet.deploy(
+    source=TOKEN_CONTRACT_FILE,
+    constructor_calldata=[
+      str_to_felt("Paint"),
+      str_to_felt("PAINT"),
+      *uint(1000), # initial_supply
+      canvas.contract_address, # recipient
+      canvas.contract_address # owner
+    ]
+  )
 
 @pytest.mark.asyncio
-async def test_update_canvas(canvasContract: StarknetContract):
- """Test update_canvas method."""
- # Create a new Starknet class that simulates the StarkNet system
- starknet = await Starknet.empty()
+async def test_update_canvas(get_starknet, account_factory, canvas_factory, token_factory):
 
- tokenContract = await starknet.deploy(
-   source=TOKEN_CONTRACT_FILE,
-   constructor_calldata=[
-     str_to_felt("Paint"),
-     str_to_felt("PAINT"),
-     *uint(100),
-     canvasContract.contract_address, # recipient
-     canvasContract.contract_address, # owner
-   ]
-)
+  starknet = get_starknet
+  account = account_factory
+  canvas = canvas_factory
+  token = token_factory
 
- # Set reference to $PAINT token contract
- await canvasContract.update_token_contract_address(
-   contract_address=tokenContract.contract_address,
- ).invoke()
+  execute_info = await canvas.get_canvas_data().call()
+  print(execute_info.result)
 
- token_contract_address_execution_info = await canvasContract.get_token_contract_address().call()
+  execute_info = await token.totalSupply().call()
+  print("\n\nTotal token supply: ", from_uint(execute_info.result.totalSupply))
 
- assert token_contract_address_execution_info.result.contract_address == tokenContract.contract_address
+  # Set reference to $PAINT token contract
+  await canvas.update_token_contract_address(
+    contract_address=token.contract_address,
+  ).invoke(caller_address=account.contract_address)
 
- # Set initial canvas pixels
- await canvasContract.update_canvas(
-   indexes=[0,1,2,3,4,24],
-   values=[1,2,3,4,5,6],
-   updates=6,
- ).invoke()
+  get_token_contract_address_execution_info = await canvas.get_token_contract_address().call()
 
- execution_info = await canvasContract.get_array().call()
- assert execution_info.result.arr[0] == 1
- assert execution_info.result.arr[1] == 2
- assert execution_info.result.arr[2] == 3
- assert execution_info.result.arr[3] == 4
- assert execution_info.result.arr[4] == 5
- assert execution_info.result.arr[24] == 6
+  assert get_token_contract_address_execution_info.result.contract_address == token.contract_address
 
- # Overwrite existing canvas pixel values
- await canvasContract.update_canvas(
-   indexes=[0,5,23],
-   values=[7,7,7],
-   updates=3
- ).invoke()
+  print("\nCanvas contract address", canvas.contract_address)
+  print("\nToken contract address", token.contract_address)
 
- execution_info = await canvasContract.get_array().call()
- assert execution_info.result.arr[0] == 7
- assert execution_info.result.arr[1] == 2
- assert execution_info.result.arr[2] == 3
- assert execution_info.result.arr[3] == 4
- assert execution_info.result.arr[4] == 5
- assert execution_info.result.arr[5] == 7
- assert execution_info.result.arr[23] == 7
+  # Set initial canvas pixels
+  await canvas.update_canvas_data(
+    indexes=[0,1,2,3,4,24],
+    values=[1,2,3,4,5,6],
+    updates=6,
+  ).invoke(caller_address=account.contract_address)
 
- # Check the result state
- execution_info = await canvasContract.get_array().call()
- print(execution_info.result.arr)
+  execution_info = await canvas.get_canvas_data().call()
+  assert execution_info.result.arr[0] == 1
+  assert execution_info.result.arr[1] == 2
+  assert execution_info.result.arr[2] == 3
+  assert execution_info.result.arr[3] == 4
+  assert execution_info.result.arr[4] == 5
+  assert execution_info.result.arr[24] == 6
+
+  # Overwrite existing canvas pixel values
+  execution_info = await canvas.update_canvas_data(
+    indexes=[0,5,23],
+    values=[7,7,7],
+    updates=3
+  ).invoke(caller_address=account.contract_address)
+
+  # Check the result state
+  execution_info = await canvas.get_canvas_data().call()
+  assert execution_info.result.arr[0] == 7
+  assert execution_info.result.arr[1] == 2
+  assert execution_info.result.arr[2] == 3
+  assert execution_info.result.arr[3] == 4
+  assert execution_info.result.arr[4] == 5
+  assert execution_info.result.arr[5] == 7
+  assert execution_info.result.arr[23] == 7
+
+  execution_info = await canvas.get_token_balance_for_user(account=account.contract_address).call()
+  print("\nAccount balance", execution_info.result.balance)

@@ -2,13 +2,34 @@
 
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.starknet.common.syscalls import get_caller_address
+from starkware.cairo.common.math import assert_le
+from starkware.cairo.common.uint256 import (Uint256)
+from starkware.starknet.common.syscalls import get_caller_address, get_contract_address
+from openzeppelin.token.erc20.library import (
+    ERC20_name,
+    ERC20_symbol,
+    ERC20_totalSupply,
+    ERC20_decimals,
+    ERC20_balanceOf,
+    ERC20_allowance,
+
+    ERC20_initializer,
+    ERC20_approve,
+    ERC20_increaseAllowance,
+    ERC20_decreaseAllowance,
+    ERC20_transfer,
+    ERC20_transferFrom,
+    ERC20_mint,
+)
 
 struct PixelEnum:
     member data: felt
     member timestamp: felt
     member last_updated_by: felt
 end
+
+const INITIAL_CANVAS_SIZE = 25
+const PAINT_COST = 1
 
 @storage_var
 func canvas_pixels_len() -> (res: felt):
@@ -19,7 +40,7 @@ func canvas_pixels(index: felt, param_index: felt) -> (res: felt):
 end
 
 @storage_var
-func token_contract_address() -> (contract_address: felt):
+func token_contract_address() -> (address: felt):
 end
 
 @constructor
@@ -28,24 +49,30 @@ func constructor{
   pedersen_ptr : HashBuiltin*,
   range_check_ptr
 }():
-  canvas_pixels_len.write(25)
+  canvas_pixels_len.write(INITIAL_CANVAS_SIZE)
   return ()
 end
 
 @external
-func update_canvas{
+func update_canvas_data{
   syscall_ptr: felt*,
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
-}(indexes_len: felt, indexes: felt*, values_len: felt, values: felt*, updates: felt):
+}(indexes_len: felt, indexes: felt*, values_len: felt, values: felt*, updates: felt) -> ():
   alloc_locals
+
+  let (caller) = get_caller_address()
+  let (contract_address) = get_token_contract_address()
+  local update_cost = updates * PAINT_COST
+
+  ERC20_mint(caller, Uint256(update_cost, 0))
 
   # TODO: enforce timestamp restrictions (e.g. only can be updated after 30 seconds) https://starknet.io/docs/hello_starknet/more_features.html#block-number-and-timestamp
   let (caller_address) = get_caller_address()
 
-  let (local arr_len) = canvas_pixels_len.read()
+  let (arr_len) = canvas_pixels_len.read()
 
-  patch_array(
+  patch_canvas_data(
     indexes=indexes,
     values=values,
     updates=updates,
@@ -55,7 +82,7 @@ func update_canvas{
   return ()
 end
 
-func patch_array{
+func patch_canvas_data{
   syscall_ptr: felt*,
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
@@ -70,7 +97,7 @@ func patch_array{
   canvas_pixels.write(updateIndex, PixelEnum.last_updated_by, updater_address)
   # canvas_pixels.write(updateIndex, PixelEnum.timestamp, timestamp
 
-  patch_array(
+  patch_canvas_data(
     indexes=indexes,
     values=values,
     updates=updates - 1,
@@ -81,7 +108,7 @@ func patch_array{
 end
 
 @view
-func get_array{
+func get_canvas_data{
   syscall_ptr: felt*,
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
@@ -91,12 +118,12 @@ func get_array{
   let (local arr: felt*) = alloc()
   let (local arr_len) = canvas_pixels_len.read()
 
-  prepare_array(arr_len=arr_len, arr=arr, index=0)
+  reduce_to_canvas_data(arr_len=arr_len, arr=arr, index=0)
 
   return (arr_len=arr_len, arr=arr)
 end
 
-func prepare_array{
+func reduce_to_canvas_data{
   syscall_ptr: felt*,
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
@@ -106,7 +133,7 @@ func prepare_array{
   end
   let (base) = canvas_pixels.read(index, PixelEnum.data)
   assert [arr] = base
-  prepare_array(arr_len=arr_len - 1, arr=&arr[1], index=index + 1)
+  reduce_to_canvas_data(arr_len=arr_len - 1, arr=&arr[1], index=index + 1)
   return ()
 end
 
@@ -116,17 +143,27 @@ func get_token_contract_address{
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
 }() -> (contract_address: felt):
-  let (res) = token_contract_address.read()
-  return (contract_address=res)
+  let (address) = token_contract_address.read()
+  return (contract_address=address)
 end
 
-# TODO: write test, fix issues
 @external
 func update_token_contract_address{
   syscall_ptr: felt*,
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
 }(contract_address: felt):
+  # TODO: assert is owner
   token_contract_address.write(contract_address)
   return ()
+end
+
+@view
+func get_token_balance_for_user{
+  syscall_ptr: felt*,
+  pedersen_ptr: HashBuiltin*,
+  range_check_ptr
+}(account: felt) -> (balance: Uint256):
+  let (balance: Uint256) = ERC20_balanceOf(account)
+  return (balance)
 end
