@@ -68,11 +68,12 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   canvas = canvas_factory
   token = token_factory
 
-  execute_info = await canvas.get_canvas_data().call()
-  print(execute_info.result)
+  execution_info = await canvas.get_canvas_data().call()
+  print("\nCanvas state", execution_info.result.arr)
 
-  execute_info = await token.totalSupply().call()
-  print("\n\nTotal token supply: ", from_uint(execute_info.result.totalSupply))
+  execution_info = await token.totalSupply().call()
+  assert from_uint(execution_info.result.totalSupply) == 1000
+  print("Total token supply: ", from_uint(execution_info.result.totalSupply))
 
   # Set reference to $PAINT token contract
   await canvas.update_token_contract_address(
@@ -83,8 +84,8 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
 
   assert get_token_contract_address_execution_info.result.contract_address == token.contract_address
 
-  print("\nCanvas contract address", canvas.contract_address)
-  print("\nToken contract address", token.contract_address)
+  print("Canvas contract address", canvas.contract_address)
+  print("Token contract address", token.contract_address)
 
   # Set initial canvas pixels
   await canvas.update_canvas_data(
@@ -100,6 +101,11 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   assert execution_info.result.arr[3] == 4
   assert execution_info.result.arr[4] == 5
   assert execution_info.result.arr[24] == 6
+  print("Updated canvas state", execution_info.result.arr)
+
+  execution_info = await canvas.get_token_balance_for_user(account=account.contract_address).call()
+  assert from_uint(execution_info.result.balance) == 6
+  print("Current account balance", from_uint(execution_info.result.balance))
 
   # Overwrite existing canvas pixel values
   execution_info = await canvas.update_canvas_data(
@@ -117,6 +123,8 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   assert execution_info.result.arr[4] == 5
   assert execution_info.result.arr[5] == 7
   assert execution_info.result.arr[23] == 7
+  print("Updated canvas state", execution_info.result.arr)
 
   execution_info = await canvas.get_token_balance_for_user(account=account.contract_address).call()
-  print("\nAccount balance", execution_info.result.balance)
+  assert from_uint(execution_info.result.balance) == 9
+  print("Current account Balance", from_uint(execution_info.result.balance))

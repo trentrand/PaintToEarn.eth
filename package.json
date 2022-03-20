@@ -14,6 +14,7 @@
 		"log-storage-vars": "python3.7 getStorageVarAddress.py",
 		"start": "next start",
 		"test": "pytest tests/ -s -p no:warnings",
+		"test:watch": "ptw -- tests/ -s -p no:warnings",
 		"lint": "next lint",
 		"lint:fix": "eslint src --fix && yarn format",
 		"type-check": "tsc --noEmit",
