@@ -59,4 +59,4 @@ Please report any security issues you find by opening up an issue in this reposi
 
 ## License
 
-Cairopal Contracts are released under the [AGPL-3.0-only](LICENSE).
+PaintToEarn.eth is released under the [AGPL-3.0-only](LICENSE) license.
