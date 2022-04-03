@@ -3,5 +3,14 @@
     "sznm/react",
     "plugin:react/jsx-runtime",
     "plugin:@next/next/recommended"
-  ]
+  ],
+  "parserOptions": {
+    "project": ["./tsconfig.json"]
+  },
+  "rules": {
+    "react/jsx-filename-extension": "off",
+    "no-console": "off",
+    "no-plusplus": "off",
+    "no-param-reassign": "off"
+  }
 }

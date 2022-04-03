@@ -27,19 +27,19 @@ nile node
 Install frontend dependencies
 
 ```bash
-yarn
+npm install
 ```
 
 Run frontend locally
 
 ```bash
-yarn dev
+npm run dev
 ```
 
 #### Run tests
 
 ```bash
-yarn test
+npm run test
 ```
 
 ## Acknowledgements

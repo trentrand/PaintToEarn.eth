@@ -19,10 +19,11 @@ const SomeText = () => {
     <>
       <Heading as="h2" fontSize="3xl">
         Hello,{" "}
-        {account ?
-          `${account.substring(0, 4)}...${account.substring(account.length - 4)}` :
-          "anon"
-        }
+        {account
+          ? `${account.substring(0, 4)}...${account.substring(
+              account.length - 4
+            )}`
+          : "anon"}
       </Heading>
 
       {!account && (

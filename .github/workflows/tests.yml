@@ -1,4 +1,4 @@
-name: Tests
+name: Build and run tests
 
 on: [ push, pull_request ]
 
@@ -6,11 +6,21 @@ jobs:
   tests:
 
     runs-on: ubuntu-latest
-
+    name: Run tests
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 14
-    - run: yarn
-    - run: yarn build
+      - uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+          architecture: x64
+      - run: python -m pip install starknet-devnet pytest pytest-asyncio
+      - run: docker run --rm -v "$PWD":"/project" --workdir /project lucaslvy/nile:latest compile
+      - run: npm install
+      - run: npm run lint
+      - run: npm run build
+      - run: npm test

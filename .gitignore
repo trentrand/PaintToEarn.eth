@@ -1,3 +1,6 @@
+# Starknet
+artifacts/
+
 # Logs
 logs
 *.log

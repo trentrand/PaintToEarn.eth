@@ -1,4 +1,4 @@
-import { Flex, Link, Text, Button, Image } from "@chakra-ui/react";
+import { Flex, Button } from "@chakra-ui/react";
 import { AiFillGithub } from "react-icons/ai";
 
 const Footer = () => {
