@@ -1,23 +1,40 @@
-import React  from 'react';
-import { Flex, Box, Text, IconButton, useColorModeValue } from '@chakra-ui/react';
-import { RiBrushFill, RiBrushLine, RiEraserFill, RiEraserLine } from 'react-icons/ri';
-import { HiOutlineSaveAs } from 'react-icons/hi';
-import { ColorPicker } from 'chakra-color-picker';
-import { colorMap } from '../../constants/colorPalette';
+import {
+  Flex,
+  Box,
+  Text,
+  IconButton,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { ColorPicker } from "chakra-color-picker";
+import PropTypes from "prop-types";
+import { HiOutlineSaveAs } from "react-icons/hi";
+import {
+  RiBrushFill,
+  RiBrushLine,
+  RiEraserFill,
+  RiEraserLine,
+} from "react-icons/ri";
+
+import { colorMap } from "../../constants/colorPalette";
 
 const colors = Object.values(colorMap);
 
-const Toolbar = ({ onSave, onChangeColor, onChangeTool, currentTool, modificationsCounter, children }) => {
-  const backgroundColor = useColorModeValue('gray.100', 'whiteAlpha.200')
-  const popoverBackgroundColor = useColorModeValue('gray.200', 'whiteAlpha.300')
+const Toolbar = ({
+  onSave,
+  onChangeColor,
+  onChangeTool,
+  currentTool,
+  modificationsCounter,
+}) => {
+  const backgroundColor = useColorModeValue("gray.100", "whiteAlpha.200");
+  const popoverBackgroundColor = useColorModeValue(
+    "gray.200",
+    "whiteAlpha.300"
+  );
 
   return (
     <>
-      <Box
-        position="absolute"
-        left="10px"
-        top="calc(50% - 31px)"
-      >
+      <Box position="absolute" left="10px" top="calc(50% - 31px)">
         <Flex
           border="gray.50"
           background={backgroundColor}
@@ -36,23 +53,41 @@ const Toolbar = ({ onSave, onChangeColor, onChangeTool, currentTool, modificatio
             textDecoration="none !important"
             outline="none !important"
             boxShadow="none !important"
-            isActive={currentTool === 'remove'}
-            icon={currentTool === 'remove' ? <RiEraserFill /> : <RiEraserLine />}
-            onClick={() => onChangeTool('remove')}
+            isActive={currentTool === "remove"}
+            icon={
+              currentTool === "remove" ? <RiEraserFill /> : <RiEraserLine />
+            }
+            onClick={() => onChangeTool("remove")}
           />
           <IconButton
             aria-label="paint mode"
             textDecoration="none !important"
             outline="none !important"
             boxShadow="none !important"
-            isActive={currentTool === 'add'}
-            icon={currentTool === 'add' ? <RiBrushFill /> : <RiBrushLine />}
-            onClick={() => onChangeTool('add')}
+            isActive={currentTool === "add"}
+            icon={currentTool === "add" ? <RiBrushFill /> : <RiBrushLine />}
+            onClick={() => onChangeTool("add")}
           />
-          {currentTool === 'add' ? (
+          {currentTool === "add" ? (
             <Box position="relative" height="50px" width="50px">
-              <ColorPicker bg={popoverBackgroundColor} borderWidth="1px" onChange={onChangeColor} colors={colors} placement="right-end" defaultColor="#ff0000" />
-              <Text as="a" pointerEvents="none" position="absolute" top="50%" left="50%" transform="translate(-50%, -50%)">{modificationsCounter}</Text>
+              <ColorPicker
+                bg={popoverBackgroundColor}
+                borderWidth="1px"
+                onChange={onChangeColor}
+                colors={colors}
+                placement="right-end"
+                defaultColor="#ff0000"
+              />
+              <Text
+                as="a"
+                pointerEvents="none"
+                position="absolute"
+                top="50%"
+                left="50%"
+                transform="translate(-50%, -50%)"
+              >
+                {modificationsCounter}
+              </Text>
             </Box>
           ) : null}
           <IconButton
@@ -68,6 +103,14 @@ const Toolbar = ({ onSave, onChangeColor, onChangeTool, currentTool, modificatio
       </Box>
     </>
   );
-}
+};
+
+Toolbar.propTypes = {
+  onSave: PropTypes.func.isRequired,
+  onChangeColor: PropTypes.func.isRequired,
+  onChangeTool: PropTypes.func.isRequired,
+  currentTool: PropTypes.oneOf(["add", "remove"]).isRequired,
+  modificationsCounter: PropTypes.number.isRequired,
+};
 
 export default Toolbar;

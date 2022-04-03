@@ -1,11 +1,10 @@
-import React from 'react';
 import { Box, Text, useBreakpointValue, useColorMode } from "@chakra-ui/react";
 
 import { useStarknet, useTransactions } from "context";
 
 const Transactions = () => {
   const { transactions } = useTransactions();
-  const { connected, library } = useStarknet();
+  const { connected } = useStarknet();
   const { colorMode } = useColorMode();
   const textSize = useBreakpointValue({
     base: "xs",

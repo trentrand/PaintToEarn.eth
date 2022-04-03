@@ -2,8 +2,5 @@
 User-agent: *
 Allow: /
 
-# Host
-Host: https://cairopal.com
-
 # Sitemaps
-Sitemap: https://cairopal.com/sitemap.xml
+# Sitemap: https://painttoearn.eth.trentrand.com/sitemap.xml

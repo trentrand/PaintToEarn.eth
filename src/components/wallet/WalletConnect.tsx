@@ -41,8 +41,11 @@ const WalletConnect = () => {
         outline="none !important"
         boxShadow="none !important"
       >
+        {/* TODO: mock tokens with localstorage balance */}
         <Text fontSize="md">3.2</Text>
-        <Text fontSize="xs" color="gray.500" ml={1}>PAINT</Text>
+        <Text fontSize="xs" color="gray.500" ml={1}>
+          PAINT
+        </Text>
       </Button>
       <Button
         textDecoration="none !important"
