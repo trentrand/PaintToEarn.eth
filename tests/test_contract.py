@@ -87,6 +87,10 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   print("Canvas contract address", canvas.contract_address)
   print("Token contract address", token.contract_address)
 
+  execution_info = await canvas.get_is_new_player(account=account.contract_address).call()
+  assert execution_info.result.is_existing_player == 0
+  print("User has definitely not played before")
+
   # Set initial canvas pixels
   await canvas.update_canvas_data(
     indexes=[0,1,2,3,4,24],
@@ -107,13 +111,16 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   assert from_uint(execution_info.result.balance) == 6
   print("Current account balance", from_uint(execution_info.result.balance))
 
+  execution_info = await canvas.get_is_new_player(account=account.contract_address).call()
+  assert execution_info.result.is_existing_player == 1
+  print("User might have played before")
+
   # Overwrite existing canvas pixel values
   execution_info = await canvas.update_canvas_data(
     indexes=[0,5,23],
     values=[7,7,7],
     updates=3
   ).invoke(caller_address=account.contract_address)
-
   # Check the result state
   execution_info = await canvas.get_canvas_data().call()
   assert execution_info.result.arr[0] == 7
@@ -128,3 +135,8 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   execution_info = await canvas.get_token_balance_for_user(account=account.contract_address).call()
   assert from_uint(execution_info.result.balance) == 9
   print("Current account Balance", from_uint(execution_info.result.balance))
+
+  execution_info = await canvas.get_is_new_player(account=account.contract_address).call()
+  assert from_uint(execution_info.result.is_existing_player) == 1
+  print("User might have played before")
+

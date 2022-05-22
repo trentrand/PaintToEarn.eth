@@ -1,7 +1,7 @@
 %lang starknet
 
 from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin
 from starkware.cairo.common.math import assert_le
 from starkware.cairo.common.uint256 import (Uint256)
 from starkware.starknet.common.syscalls import get_caller_address, get_contract_address
@@ -20,6 +20,10 @@ from openzeppelin.token.erc20.library import (
     ERC20_transfer,
     ERC20_transferFrom,
     ERC20_mint,
+)
+from bloomfilter.contracts.bloom import (
+    bloom_add,
+    bloom_check,
 )
 
 struct PixelEnum:

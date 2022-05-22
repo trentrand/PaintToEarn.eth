@@ -6,8 +6,8 @@ from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.math import assert_le, split_felt, unsigned_div_rem
 from starkware.cairo.common.uint256 import Uint256, uint256_unsigned_div_rem
 
-from contracts.lib.bitwise import bitshift_left
-from contracts.utils.constants import FALSE, TRUE
+from bloomfilter.contracts.lib.bitwise import bitshift_left
+from bloomfilter.contracts.utils.constants import FALSE, TRUE
 
 # TODO: make these parameters configurable
 
