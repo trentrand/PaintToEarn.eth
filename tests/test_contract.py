@@ -1,13 +1,14 @@
 import os
-
 import pytest
 import asyncio
 from starkware.starknet.testing.starknet import Starknet
 from starkware.starknet.testing.contract import StarknetContract
+from utils.Utilities import (uint, from_uint, str_to_felt, set_block_timestamp)
 from utils.Signer import Signer
-from utils.Utilities import (uint, from_uint, str_to_felt)
 
 mockSigner = Signer(123456789987654321)
+
+DAY = 86400
 
 @pytest.fixture(scope='module')
 def event_loop():
@@ -87,6 +88,12 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   print("Canvas contract address", canvas.contract_address)
   print("Token contract address", token.contract_address)
 
+  execution_info = await canvas.get_last_user_activity(account=account.contract_address).call()
+  assert execution_info.result.last_activity_timestamp == 0
+  print("User has not played before")
+
+  set_block_timestamp(starknet.state, 2 * DAY)
+
   # Set initial canvas pixels
   await canvas.update_canvas_data(
     indexes=[0,1,2,3,4,24],
@@ -106,6 +113,12 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   execution_info = await canvas.get_token_balance_for_user(account=account.contract_address).call()
   assert from_uint(execution_info.result.balance) == 6
   print("Current account balance", from_uint(execution_info.result.balance))
+
+  execution_info = await canvas.get_last_user_activity(account=account.contract_address).call()
+  assert execution_info.result.last_activity_timestamp != 0
+  print("User has played")
+
+  # set_block_timestamp(60)
 
   # Overwrite existing canvas pixel values
   execution_info = await canvas.update_canvas_data(
@@ -128,3 +141,7 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   execution_info = await canvas.get_token_balance_for_user(account=account.contract_address).call()
   assert from_uint(execution_info.result.balance) == 9
   print("Current account Balance", from_uint(execution_info.result.balance))
+
+  execution_info = await canvas.get_last_user_activity(account=account.contract_address).call()
+  assert execution_info.result.last_activity_timestamp != 0
+  print("User has played")

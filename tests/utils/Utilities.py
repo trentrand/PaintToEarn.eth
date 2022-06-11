@@ -1,3 +1,6 @@
+from starkware.starknet.testing.starknet import Starknet
+from starkware.starknet.business_logic.state.state import BlockInfo
+
 def uint(a):
   return(a, 0)
 
@@ -12,3 +15,12 @@ def from_uint(uint):
 def str_to_felt(text):
   b_text = bytes(text, 'ascii')
   return int.from_bytes(b_text, "big")
+
+def get_block_timestamp(starknet_state):
+  return starknet_state.state.block_info.block_timestamp
+
+def set_block_timestamp(starknet_state, timestamp):
+  starknet_state.state.block_info = BlockInfo.create_for_testing(
+    starknet_state.state.block_info.block_number + 1,
+    timestamp
+  )

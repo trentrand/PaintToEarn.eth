@@ -13,6 +13,12 @@ The game will reward player engagement, re-distributing players more $PAINT than
 
 To prevent token farming, the canvas may lock changed pixels or player wallet addresses for a reasonable timespan.
 
+Accumulating tokens is advantageous because...
+- The timespan can be bought:
+  - e.g. 100 second delay, reduced by 1 second per $PAINT * 0.01 you can essentially buy access instantly for 1 $PAINT
+- Each pixel has a cost
+  - e.g. 100 second delay per pixel
+
 ## Development
 
 Scaling is achieved by using the [Starknet](https://starkware.co/starknet/) layer 2 network.
