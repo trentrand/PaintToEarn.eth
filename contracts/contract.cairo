@@ -72,7 +72,12 @@ func update_canvas_data{
 
   let (caller_address) = get_caller_address()
 
-  # TODO: enforce timestamp restrictions (e.g. only can be updated after 30 seconds)
+  # enforce timestamp restrictions - canvas can only be updated after 30 seconds
+  let (last_activity_timestamp) = get_last_user_activity(account=caller_address)
+  let locked_until_timestamp = last_activity_timestamp + 30
+  let (block_timestamp) = get_block_timestamp()
+  let (can_play) = is_le(locked_until_timestamp, block_timestamp)
+  assert can_play = 1
 
   let (contract_address) = get_token_contract_address()
   local update_cost = updates * PAINT_COST

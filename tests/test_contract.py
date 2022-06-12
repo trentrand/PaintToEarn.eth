@@ -3,12 +3,16 @@ import pytest
 import asyncio
 from starkware.starknet.testing.starknet import Starknet
 from starkware.starknet.testing.contract import StarknetContract
+from starkware.starkware_utils.error_handling import StarkException
 from utils.Utilities import (uint, from_uint, str_to_felt, set_block_timestamp)
 from utils.Signer import Signer
 
 mockSigner = Signer(123456789987654321)
 
-DAY = 86400
+SECOND = 1
+MINUTE = 60 * SECOND
+HOUR = 60 * MINUTE
+DAY = 24 * HOUR
 
 @pytest.fixture(scope='module')
 def event_loop():
@@ -92,7 +96,8 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   assert execution_info.result.last_activity_timestamp == 0
   print("User has not played before")
 
-  set_block_timestamp(starknet.state, 2 * DAY)
+  # Simulate the beginning of time
+  set_block_timestamp(starknet.state, 31 * SECOND)
 
   # Set initial canvas pixels
   await canvas.update_canvas_data(
@@ -118,7 +123,8 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   assert execution_info.result.last_activity_timestamp != 0
   print("User has played")
 
-  # set_block_timestamp(60)
+  print("Simulate 30 second wait")
+  set_block_timestamp(starknet.state, 1 * MINUTE + 1 * SECOND)
 
   # Overwrite existing canvas pixel values
   execution_info = await canvas.update_canvas_data(
@@ -145,3 +151,12 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   execution_info = await canvas.get_last_user_activity(account=account.contract_address).call()
   assert execution_info.result.last_activity_timestamp != 0
   print("User has played")
+
+  # Ensure play fails if user doesn't wait
+  with pytest.raises(StarkException, match="assert can_play = 1"):
+    await canvas.update_canvas_data(
+      indexes=[0],
+      values=[0],
+      updates=1
+    ).invoke(caller_address=account.contract_address)
+  print("Update Canvas Data failed as expected (requires 30 second wait)")
