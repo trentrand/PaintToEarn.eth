@@ -90,7 +90,7 @@ func update_canvas_data{
     indexes=indexes,
     values=values,
     updates=updates,
-    updater_address=caller_address
+    updater_address=caller_address,
   )
 
   update_last_user_activity(account=caller_address)
@@ -111,7 +111,9 @@ func patch_canvas_data{
   tempvar updateIndex = indexes[updates - 1]
   canvas_pixels.write(updateIndex, PixelEnum.data, values[updates - 1])
   canvas_pixels.write(updateIndex, PixelEnum.last_updated_by, updater_address)
-  # canvas_pixels.write(updateIndex, PixelEnum.timestamp, timestamp
+
+  let (block_timestamp) = get_block_timestamp()
+  canvas_pixels.write(updateIndex, PixelEnum.timestamp, block_timestamp)
 
   patch_canvas_data(
     indexes=indexes,
@@ -134,7 +136,23 @@ func get_canvas_data{
   let (local arr: felt*) = alloc()
   let (local arr_len) = canvas_pixels_len.read()
 
-  reduce_to_canvas_data(arr_len=arr_len, arr=arr, index=0)
+  reduce_to_canvas_data(arr_len=arr_len, arr=arr, index=0, field=PixelEnum.data)
+
+  return (arr_len=arr_len, arr=arr)
+end
+
+@view
+func get_canvas_timestamps{
+  syscall_ptr: felt*,
+  pedersen_ptr: HashBuiltin*,
+  range_check_ptr
+}() -> (arr_len: felt, arr: felt*):
+  alloc_locals
+
+  let (local arr: felt*) = alloc()
+  let (local arr_len) = canvas_pixels_len.read()
+
+  reduce_to_canvas_data(arr_len=arr_len, arr=arr, index=0, field=PixelEnum.timestamp)
 
   return (arr_len=arr_len, arr=arr)
 end
@@ -143,13 +161,13 @@ func reduce_to_canvas_data{
   syscall_ptr: felt*,
   pedersen_ptr: HashBuiltin*,
   range_check_ptr
-}(arr_len: felt, arr: felt*, index: felt):
+}(arr_len: felt, arr: felt*, index: felt, field: felt):
   if arr_len == 0:
     return ()
   end
-  let (base) = canvas_pixels.read(index, PixelEnum.data)
+  let (base) = canvas_pixels.read(index, field)
   assert [arr] = base
-  reduce_to_canvas_data(arr_len=arr_len - 1, arr=&arr[1], index=index + 1)
+  reduce_to_canvas_data(arr_len=arr_len - 1, arr=&arr[1], index=index + 1, field=field)
   return ()
 end
 

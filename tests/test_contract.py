@@ -113,7 +113,17 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   assert execution_info.result.arr[3] == 4
   assert execution_info.result.arr[4] == 5
   assert execution_info.result.arr[24] == 6
+
+  execution_info_timestamps = await canvas.get_canvas_timestamps().call()
+  assert execution_info_timestamps.result.arr[0] == 31 * SECOND
+  assert execution_info_timestamps.result.arr[1] == 31 * SECOND
+  assert execution_info_timestamps.result.arr[2] == 31 * SECOND
+  assert execution_info_timestamps.result.arr[3] == 31 * SECOND
+  assert execution_info_timestamps.result.arr[4] == 31 * SECOND
+  assert execution_info_timestamps.result.arr[24] == 31 * SECOND
+
   print("Updated canvas state", execution_info.result.arr)
+  print("with new timestamps", execution_info_timestamps.result.arr)
 
   execution_info = await canvas.get_token_balance_for_user(account=account.contract_address).call()
   assert from_uint(execution_info.result.balance) == 6
@@ -159,4 +169,4 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
       values=[0],
       updates=1
     ).invoke(caller_address=account.contract_address)
-  print("Update Canvas Data failed as expected (requires 30 second wait)")
+  print("Update canvas data failed as expected (requires 30 second wait)")
