@@ -8,16 +8,26 @@
 
 This play-to-earn game allows players to paint on a canvas deployed on the Ethereum network.
 
-Players must pay $PAINT tokens to paint pixels on the canvas.
-The game will reward player engagement, re-distributing players more $PAINT than they've spent.
+Players must have $PAINT tokens to paint pixels on the canvas.
+The game will reward player engagement, distributing players $PAINT as they play.
 
-To prevent token farming, the canvas may lock changed pixels or player wallet addresses for a reasonable timespan.
+The canvas only allows player wallet addresses to participate after waiting a lockout period. This is meant to act as a reasonable timespan to prevent token farming and botting.
 
-Accumulating tokens is advantageous because...
+Changed pixels may be locked by dedicating $PAINT per pixel at the time of update. Dedicated $PAINT will be burned.
+
+In the future, accumulating tokens may be advantageous because...
 - The timespan can be bought:
-  - e.g. 100 second delay, reduced by 1 second per $PAINT * 0.01 you can essentially buy access instantly for 1 $PAINT
-- Each pixel has a cost
-  - e.g. 100 second delay per pixel
+  - e.g. 30 second delay by default, reduced by 1 second per $PAINT * 0.01, so you can essentially buy access instantly for 0.30 $PAINT
+- Each pixel can be locked:
+  - e.g. 0 second lock per pixel by default, increased by 1 second per $PAINT * 0.01, so you can lock a pixel from being changed for a minute by paying 0.60 $PAINT
+
+## TODO
+
+A few remaining features need to be developed to deliver an MVP version of the game:
+- [x] Player wallet addresses can only re-participate after waiting a timeout duration
+- [ ] Player wallet addresses can only change a number of pixels corresponding to their current balance of $PAINT tokens
+- [ ] Pixel updates are locked for a default duration, and cannot be changed by others during this duration
+- [ ] Pixel updates can be locked for a longer duration by dedicating their $PAINT tokens, which are burnt as a result
 
 ## Development
 
@@ -61,7 +71,7 @@ npm run test
 
 This project is still in a very early and experimental phase. It has never been audited nor thoroughly reviewed for security vulnerabilities. Not recommended for production use.
 
-Please report any security issues you find by opening up an issue in this reposisitory.
+Please report any security issues you find by opening up an issue in this repository.
 
 ## License
 
