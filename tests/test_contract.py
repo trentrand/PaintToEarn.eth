@@ -163,10 +163,22 @@ async def test_update_canvas(get_starknet, account_factory, canvas_factory, toke
   print("User has played")
 
   # Ensure play fails if user doesn't wait
-  with pytest.raises(StarkException, match="assert can_play = 1"):
+  with pytest.raises(StarkException, match="assert can_play_timestamp = 1"):
     await canvas.update_canvas_data(
       indexes=[0],
       values=[0],
       updates=1
     ).invoke(caller_address=account.contract_address)
   print("Update canvas data failed as expected (requires 30 second wait)")
+
+  print("Simulate 30 second wait")
+  set_block_timestamp(starknet.state, 1 * MINUTE + 31 * SECOND)
+
+  # Ensure play fails if user cannot afford
+  with pytest.raises(StarkException, match="assert can_play_balance = 1"):
+    await canvas.update_canvas_data(
+      indexes=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      values=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      updates=10
+    ).invoke(caller_address=account.contract_address)
+  print("Update canvas data failed as expected (requires 10 $PAINT)")

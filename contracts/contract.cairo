@@ -4,7 +4,10 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.math import assert_le
 from starkware.cairo.common.math_cmp import is_le
-from starkware.cairo.common.uint256 import (Uint256)
+from starkware.cairo.common.uint256 import (
+  Uint256,
+  uint256_le
+)
 from starkware.starknet.common.syscalls import (
     get_caller_address,
     get_contract_address,
@@ -76,13 +79,19 @@ func update_canvas_data{
   let (last_activity_timestamp) = get_last_user_activity(account=caller_address)
   let locked_until_timestamp = last_activity_timestamp + 30
   let (block_timestamp) = get_block_timestamp()
-  let (can_play) = is_le(locked_until_timestamp, block_timestamp)
-  assert can_play = 1
+  let (can_play_timestamp) = is_le(locked_until_timestamp, block_timestamp)
+  assert can_play_timestamp = 1
 
-  let (contract_address) = get_token_contract_address()
-  local update_cost = updates * PAINT_COST
+  let update_cost: Uint256 = Uint256(updates * PAINT_COST, 0)
+  let (caller_address_balance) = get_token_balance_for_user(account=caller_address)
 
-  ERC20_mint(caller_address, Uint256(update_cost, 0))
+  let (last_activity_timestamp) = get_last_user_activity(account=caller_address)
+  if last_activity_timestamp != 0:
+    let (can_play_balance) = uint256_le(update_cost, caller_address_balance)
+    assert can_play_balance = 1
+  end
+
+  ERC20_mint(caller_address, update_cost)
 
   let (arr_len) = canvas_pixels_len.read()
 

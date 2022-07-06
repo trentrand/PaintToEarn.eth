@@ -25,7 +25,7 @@ In the future, accumulating tokens may be advantageous because...
 
 A few remaining features need to be developed to deliver an MVP version of the game:
 - [x] Player wallet addresses can only re-participate after waiting a timeout duration
-- [ ] Player wallet addresses can only change a number of pixels corresponding to their current balance of $PAINT tokens
+- [x] Player wallet addresses can only change a number of pixels based on their current balance of $PAINT tokens
 - [ ] Pixel updates are locked for a default duration, and cannot be changed by others during this duration
 - [ ] Pixel updates can be locked for a longer duration by dedicating their $PAINT tokens, which are burnt as a result
 
